@@ -1,67 +1,92 @@
-// const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-//   return (
-//     <div className="flex justify-center mt-6 space-x-2">
-//       {Array.from({ length: totalPages }, (_, index) => (
-//         <button
-//           key={index}
-//           className={`px-4 py-2 rounded-md border transition-all font-medium ${
-//             currentPage === index + 1
-//               ? "bg-blue-600 text-white shadow-md"
-//               : "bg-gray-200 hover:bg-gray-300"
-//           }`}
-//           onClick={() => onPageChange(index + 1)}
-//         >
-//           {index + 1}
-//         </button>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default Pagination;
-
 import React from "react";
+import Button from "./Button";
+import "../styles/components.css";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total is less than or equal to max visible
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      // Calculate start and end of page range around current page
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+
+      // Adjust range if at edges
+      if (currentPage <= 2) {
+        end = Math.min(totalPages - 1, 4);
+      } else if (currentPage >= totalPages - 2) {
+        start = Math.max(2, totalPages - 3);
+      }
+
+      // Add ellipsis if needed before middle pages
+      if (start > 2) {
+        pages.push("...");
+      }
+
+      // Add middle pages
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      // Add ellipsis if needed after middle pages
+      if (end < totalPages - 1) {
+        pages.push("...");
+      }
+
+      // Always show last page
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
   return (
-    <div className="flex justify-center items-center gap-2 mt-4">
-      <button
-        className={`px-3 py-1 rounded-full border ${
-          currentPage === 1
-            ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-700"
-        }`}
+    <div className="pagination">
+      <Button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
+        variant="outline"
+        size="small"
       >
-        ◀
-      </button>
+        Previous
+      </Button>
 
-      {[...Array(totalPages)].map((_, index) => (
-        <button
-          key={index}
-          className={`px-3 py-1 rounded-full border ${
-            currentPage === index + 1
-              ? "bg-blue-600 text-white font-bold"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-          onClick={() => onPageChange(index + 1)}
-        >
-          {index + 1}
-        </button>
-      ))}
+      <div className="page-numbers">
+        {getPageNumbers().map((page, index) => (
+          <React.Fragment key={index}>
+            {page === "..." ? (
+              <span className="ellipsis">...</span>
+            ) : (
+              <Button
+                variant={currentPage === page ? "primary" : "outline"}
+                size="small"
+                onClick={() => onPageChange(page)}
+                className={currentPage === page ? "active" : ""}
+              >
+                {page}
+              </Button>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
 
-      <button
-        className={`px-3 py-1 rounded-full border ${
-          currentPage === totalPages
-            ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-700"
-        }`}
+      <Button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
+        variant="outline"
+        size="small"
       >
-        ▶
-      </button>
+        Next
+      </Button>
     </div>
   );
 };

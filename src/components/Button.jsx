@@ -1,7 +1,23 @@
-const Button = () => {
+import React from "react";
+import "../styles/components.css";
+
+const Button = ({
+  children,
+  variant = "primary",
+  size = "medium",
+  onClick,
+  disabled = false,
+  className = "",
+  ...props
+}) => {
   return (
-    <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-      New Project
+    <button
+      className={`custom-button ${variant} ${size} ${className}`}
+      onClick={onClick}
+      disabled={disabled}
+      {...props}
+    >
+      {children}
     </button>
   );
 };
